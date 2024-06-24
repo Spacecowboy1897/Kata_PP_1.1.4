@@ -7,7 +7,9 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class UserDaoJDBCImpl extends Util implements UserDao {
+import static jm.task.core.jdbc.util.Util.getConnection;
+
+public class UserDaoJDBCImpl  implements UserDao {
     public UserDaoJDBCImpl() {
 
     }
