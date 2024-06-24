@@ -3,22 +3,26 @@ package jm.task.core.jdbc.dao;
 import jm.task.core.jdbc.model.User;
 import jm.task.core.jdbc.util.Util;
 
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
-import static jm.task.core.jdbc.util.Util.getConnection;
+public class UserDaoJDBCImpl implements UserDao {
+    private Connection connection;
 
-public class UserDaoJDBCImpl  implements UserDao {
     public UserDaoJDBCImpl() {
-
+        connection = Util.getConnection();
     }
 
     @Override
     public void createUsersTable() {
         String sql = "CREATE TABLE IF NOT EXISTS users(" + "ID BIGINT NOT NULL AUTO_INCREMENT, NAME VARCHAR(100), " + "LASTNAME VARCHAR(100), AGE INT, PRIMARY KEY (ID) )";
 
-        try (Connection connection = getConnection(); Statement stat = connection.createStatement()) {
+        try (Statement stat = connection.createStatement()) {
 
             stat.executeUpdate(sql);
             System.out.println("Table was created!");
@@ -32,7 +36,7 @@ public class UserDaoJDBCImpl  implements UserDao {
     public void dropUsersTable() {
         String sql = "DROP TABLE IF EXISTS users";
 
-        try (Connection connection = getConnection(); Statement stat = connection.createStatement()) {
+        try (Statement stat = connection.createStatement()) {
 
             stat.executeUpdate(sql);
             System.out.println("Table was dropped");
@@ -46,7 +50,7 @@ public class UserDaoJDBCImpl  implements UserDao {
     public void saveUser(String name, String lastName, byte age) {
         String sql = "INSERT INTO users (NAME, LASTNAME, AGE) VALUES(?, ?, ?)";
 
-        try (Connection connection = getConnection(); PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+        try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
 
             //preStat.setLong(1, 1);
             preparedStatement.setString(1, name);
@@ -65,7 +69,7 @@ public class UserDaoJDBCImpl  implements UserDao {
     public void removeUserById(long id) {
         String sql = "DELETE FROM users WHERE ID=?";
 
-        try (Connection connection = getConnection(); PreparedStatement preStat = connection.prepareStatement(sql)) {
+        try (PreparedStatement preStat = connection.prepareStatement(sql)) {
 
             preStat.setLong(1, id);
 
@@ -83,7 +87,7 @@ public class UserDaoJDBCImpl  implements UserDao {
 
         String sql = "SELECT ID, NAME, LASTNAME, AGE FROM users";
 
-        try (Connection connection = getConnection(); Statement stat = connection.createStatement()) {
+        try (Statement stat = connection.createStatement()) {
 
             ResultSet resultSet = stat.executeQuery(sql);
             while (resultSet.next()) {
@@ -106,7 +110,7 @@ public class UserDaoJDBCImpl  implements UserDao {
     @Override
     public void cleanUsersTable() {
         String sql = "DELETE FROM users";
-        try (Connection connection = getConnection(); Statement stat = connection.createStatement()) {
+        try (Statement stat = connection.createStatement()) {
 
             stat.executeUpdate(sql);
             System.out.println("Table was cleaned!");
